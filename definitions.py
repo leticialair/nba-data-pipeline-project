@@ -29,7 +29,7 @@ class Definitions:
     }
 
     dict_players_column_name: ClassVar[dict] = {
-        "id": "id_jogador",
+        "id_jogador": "id_jogador",
         "first_name": "nome_jogador",
         "last_name": "sobrenome_jogador",
         "position": "posicao_jogador",
