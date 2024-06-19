@@ -76,11 +76,16 @@ class NBABallDontLie:
 
         return dataframe
 
+    def enrich(self) -> DataFrame:
+        pass
+
+    def load(self) -> DataFrame:
+        pass
+
 
 if __name__ == "__main__":
     dataframe_teams = NBABallDontLie().extract("teams")
     dataframe_players = NBABallDontLie().extract("players")
-
     dataframe_games = NBABallDontLie().extract("games")
     dataframe_stats = NBABallDontLie().extract("stats")
     dataframe_season_averages = NBABallDontLie().extract("season_averages")
