@@ -1,0 +1,49 @@
+default_language_version:
+  python: python3.11
+
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+        - id: end-of-file-fixer       # Faz com que arquivos terminem com uma nova linha
+        - id: trailing-whitespace     # Faz um Trim nos códigos
+        - id: check-yaml              # Carrega arquivos yaml para verificação de syntax.
+        - id: check-docstring-first   # Checa um erro comum de inserir código antes de uma docstring
+        - id: check-case-conflict     # Checa arquivos com nomes que podem conflitar em um sistema case-insensitive como macos ou Windows FAT
+        - id: check-added-large-files # Previne que arquivos muito grandes sejam commitados
+          args: ["--maxkb=1000", "--enforce-all"]
+        - id: detect-private-key      # Checa a existência de private keys
+        - id: check-merge-conflict    # Chega arquivos que contenham conflitos de merge
+
+
+  - repo: https://github.com/executablebooks/mdformat
+    rev: 0.7.17
+    hooks:
+      - id: mdformat
+        additional_dependencies:
+          - mdformat-gfm
+          - mdformat_frontmatter
+        #exclude:
+
+  - repo: https://github.com/psf/black
+    rev: 24.3.0
+    hooks:
+        -   id: black
+            exclude: tests/
+            args: [--check]
+
+  - repo: https://github.com/pycqa/isort
+    rev: 5.13.2
+    hooks:
+      - id: isort
+        name: isort (python)
+
+  - repo: https://github.com/pycqa/pylint
+    rev: v3.2.2
+    hooks:
+      - id: pylint
+        args: [
+              "-rn",
+              "--fail-under=8.6"
+        ]

@@ -1,9 +1,11 @@
+from typing import Literal
+
 import pandas as pd
 import requests
-from definitions import definitions
 from pandas import DataFrame
 from pydantic.dataclasses import dataclass
-from typing import Literal
+
+from definitions import definitions
 
 
 @dataclass
@@ -70,6 +72,12 @@ class NBABallDontLie:
 
         # Renomeando as colunas
         dataframe = dataframe.rename(columns=dict_column_name)
+
+        # Tratando apenas colunas string
+        for column in dict_column_type.keys():
+            column_type = dict_column_type[column]
+            if column_type == "string":
+                dataframe[column] = dataframe[column].astype(str).str.strip()
 
         # Definindo os tipos
         dataframe = dataframe.astype(dict_column_type)
