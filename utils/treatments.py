@@ -18,7 +18,7 @@ class Treatments:
 
         return altura_ft * 0.3048
 
-    def pounds_to_kg(self, peso_lbs: int) -> float:
+    def lbs_to_kg(self, peso_lbs: int) -> float:
         """
         Args:
             peso_pounds: peso em libras.

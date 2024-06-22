@@ -92,10 +92,30 @@ class NBABallDontLie:
 
         return dataframe
 
-    def enrich(self) -> DataFrame:
-        pass
+    def enrich(self, dataframe: DataFrame) -> DataFrame:
+        """
+        Args:
+            dataframe: retornado no método treat com os tratamentos básicos.
 
-    def load(self) -> DataFrame:
+        Returns:
+            DataFrame: dataframe com os dados enriquecidos.
+        """
+
+        # Cria uma coluna com a altura em metros (caso aplicável)
+        if "altura_ft_jogador" in dataframe.columns:
+            dataframe["altura_mts_jogador"] = dataframe["altura_ft_jogador"].apply(
+                treatments.feet_to_meters
+            )
+
+        # Cria uma coluna com o peso em quilos (caso aplicável)
+        if "peso_lbs_jogador" in dataframe.columns:
+            dataframe["peso_kg_jogador"] = dataframe["peso_lbs_jogador"].apply(
+                treatments.lbs_to_kg
+            )
+
+        return dataframe
+
+    def load(self) -> None:
         pass
 
 
@@ -117,3 +137,6 @@ if __name__ == "__main__":
     dataframe_players = NBABallDontLie().treat(
         dataframe_players, dict_players_column_name, dict_players_column_type
     )
+
+    dataframe_teams = NBABallDontLie().enrich(dataframe_teams)
+    dataframe_players = NBABallDontLie().enrich(dataframe_players)
