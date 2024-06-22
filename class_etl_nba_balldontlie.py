@@ -129,6 +129,18 @@ class NBABallDontLie:
         access_id: str = os.getenv("AWS_ACCESS_KEY_ID"),
         secret_id: str = os.getenv("AWS_SECRET_ACCESS_KEY"),
     ) -> None:
+        """
+        Args:
+            dataframe: retornado no método enrich com o enriquecimento realizado.
+            endpoint: variável utilizada para complementar a url_base e, nesta fase, para identificar o arquivo no S3.
+            camada: especificação bucket em que o arquivo será inputado.
+            format: formato em que o arquivo será inputado.
+            region: região utilizada da AWS.
+            account_id: ID da conta utilizada da AWS.
+            access_id: ID público da conta utilizada da AWS.
+            secret_id: ID secreto da conta utilizada da AWS.
+        """
+
         bucket = f"{camada}-{region}-{account_id}"
         today_id = datetime.datetime.today().strftime("%Y%m%d")
         key = f"nba_balldontlie/{endpoint}/{endpoint}_{today_id}"
