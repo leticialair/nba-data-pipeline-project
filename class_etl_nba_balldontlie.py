@@ -16,7 +16,7 @@ from utils.treatments import treatments
 @dataclass
 class NBABallDontLie:
     """
-    Classe utilizada para extrair via API, utilizando o BALLDONTLIE, tratar os dados e subí-los em um banco.
+    Classe utilizada para extrair via API, utilizando o BALLDONTLIE, tratar os dados e subí-los no S3.
     """
 
     api_key: str = os.getenv("API_KEY_BALLDONTLIE")
@@ -163,8 +163,6 @@ class NBABallDontLie:
         )
 
         s3_client.put_object(Bucket=bucket, Key=key, Body=buffer.getvalue())
-
-        return
 
 
 if __name__ == "__main__":
