@@ -1,6 +1,9 @@
+import datetime
+import io
 import os
 from typing import Literal
 
+import boto3
 import pandas as pd
 import requests
 from pandas import DataFrame
@@ -115,28 +118,78 @@ class NBABallDontLie:
 
         return dataframe
 
-    def load(self) -> None:
-        pass
+    def load(
+        self,
+        dataframe: DataFrame,
+        endpoint: Literal["teams", "players", "games", "stats", "season_averages"],
+        camada: Literal["bronze", "silver", "gold"],
+        format: Literal["csv", "parquet"],
+        region: str = os.getenv("AWS_REGION"),
+        account_id: str = os.getenv("AWS_ACCOUNT_ID"),
+        access_id: str = os.getenv("AWS_ACCESS_KEY_ID"),
+        secret_id: str = os.getenv("AWS_SECRET_ACCESS_KEY"),
+    ) -> None:
+        bucket = f"{camada}-{region}-{account_id}"
+        today_id = datetime.datetime.today().strftime("%Y%m%d")
+        key = f"nba_balldontlie/{endpoint}/{endpoint}_{today_id}"
+
+        if format == "csv":
+            buffer = io.StringIO()
+            dataframe.to_csv(buffer, index=False)
+            key = f"{key}.csv"
+
+        elif format == "parquet":
+            buffer = io.BytesIO()
+            dataframe.to_parquet(buffer, index=False)
+            key = f"{key}.parquet"
+
+        s3_client = boto3.client(
+            "s3",
+            aws_access_key_id=access_id,
+            aws_secret_access_key=secret_id,
+            region_name=region,
+        )
+
+        s3_client.put_object(Bucket=bucket, Key=key, Body=buffer.getvalue())
+
+        return
 
 
 if __name__ == "__main__":
+    # Fase 1: API to Bronze
+
+    # Teams
     dataframe_teams = NBABallDontLie().extract("teams")
+    NBABallDontLie().load(dataframe_teams, "teams", "bronze", "csv")
+
+    # Players
     dataframe_players = NBABallDontLie().extract("players")
-    dataframe_games = NBABallDontLie().extract("games")
-    dataframe_stats = NBABallDontLie().extract("stats")
-    dataframe_season_averages = NBABallDontLie().extract("season_averages")
+    NBABallDontLie().load(dataframe_teams, "players", "bronze", "csv")
 
-    dict_teams_column_name = definitions.dict_teams_column_name
-    dict_teams_column_type = definitions.dict_teams_column_type
-    dict_players_column_name = definitions.dict_players_column_name
-    dict_players_column_type = definitions.dict_players_column_type
+    # Fase 2: Bronze to Silver
 
+    # Teams
     dataframe_teams = NBABallDontLie().treat(
-        dataframe_teams, dict_teams_column_name, dict_teams_column_type
+        dataframe_teams,
+        definitions.dict_teams_column_name,
+        definitions.dict_teams_column_type,
     )
-    dataframe_players = NBABallDontLie().treat(
-        dataframe_players, dict_players_column_name, dict_players_column_type
-    )
+    NBABallDontLie().load(dataframe_teams, "teams", "silver", "csv")
 
+    # Players
+    dataframe_players = NBABallDontLie().treat(
+        dataframe_players,
+        definitions.dict_players_column_name,
+        definitions.dict_players_column_type,
+    )
+    NBABallDontLie().load(dataframe_teams, "players", "silver", "csv")
+
+    # Fase 3: Silver to Gold
+
+    # Teams
     dataframe_teams = NBABallDontLie().enrich(dataframe_teams)
+    NBABallDontLie().load(dataframe_teams, "teams", "gold", "parquet")
+
+    # Players
     dataframe_players = NBABallDontLie().enrich(dataframe_players)
+    NBABallDontLie().load(dataframe_teams, "players", "gold", "parquet")
