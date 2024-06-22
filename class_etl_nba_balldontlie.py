@@ -1,3 +1,4 @@
+import os
 from typing import Literal
 
 import pandas as pd
@@ -14,7 +15,7 @@ class NBABallDontLie:
     Classe utilizada para extrair via API, utilizando o BALLDONTLIE, tratar os dados e subí-los em um banco.
     """
 
-    api_key: str = "56ab1f8c-e9f2-46db-9e65-9e7da5924ab5"
+    api_key: str = os.getenv("API_KEY_BALLDONTLIE")
     url_base: str = "https://api.balldontlie.io/v1/"
 
     def extract(
