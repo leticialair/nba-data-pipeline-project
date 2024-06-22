@@ -6,7 +6,8 @@ import requests
 from pandas import DataFrame
 from pydantic.dataclasses import dataclass
 
-from definitions import definitions
+from utils.definitions import definitions
+from utils.treatments import treatments
 
 
 @dataclass
@@ -74,11 +75,17 @@ class NBABallDontLie:
         # Renomeando as colunas
         dataframe = dataframe.rename(columns=dict_column_name)
 
-        # Tratando apenas colunas string
+        # Strip em colunas string
         for column in dict_column_type.keys():
             column_type = dict_column_type[column]
             if column_type == "string":
                 dataframe[column] = dataframe[column].astype(str).str.strip()
+
+        # Transformando altura_ft em float (caso aplicável)
+        if "altura_ft_jogador" in dataframe.columns:
+            dataframe["altura_ft_jogador"] = (
+                dataframe["altura_ft_jogador"].str.replace("-", ".").astype(float)
+            )
 
         # Definindo os tipos
         dataframe = dataframe.astype(dict_column_type)

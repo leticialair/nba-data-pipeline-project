@@ -1,5 +1,6 @@
-from pydantic.dataclasses import dataclass
 from typing import ClassVar
+
+from pydantic.dataclasses import dataclass
 
 
 @dataclass
@@ -45,7 +46,7 @@ class Definitions:
         "nome_jogador": "string",
         "sobrenome_jogador": "string",
         "posicao_jogador": "string",
-        "altura_ft_jogador": "string",
+        "altura_ft_jogador": "float64",
         "peso_pounds_jogador": "int32",
         "num_jersey_jogador": "int32",
         "nome_pais_jogador": "string",
